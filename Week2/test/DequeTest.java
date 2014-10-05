@@ -2,6 +2,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import static org.junit.Assert.*;
@@ -9,6 +10,7 @@ import static org.junit.Assert.*;
 public class DequeTest {
 
     Deque<String> unit;
+    Deque<Object> unitObject;
 
     @Before
     public void setUp() throws Exception {
@@ -23,6 +25,17 @@ public class DequeTest {
 
         unit.addFirst("asdf");
         assertFalse(unit.isEmpty());
+
+        unit.removeFirst();
+        assertTrue(unit.isEmpty());
+
+
+        assertTrue(unit.size() == 0);
+        unit.addFirst("xxxxxxxx");
+        assertFalse(unit.isEmpty());
+
+        unit.removeLast();
+        assertTrue(unit.isEmpty());
     }
 
     @Test
@@ -75,17 +88,52 @@ public class DequeTest {
         }
 
         unit.addFirst("22222222");
-        unit.addFirst("11111111");
-        unit.addFirst("11111111");
-        unit.addFirst("11111111");
+        unit.addFirst("1111111c");
+        unit.addFirst("1111111b");
+        unit.addFirst("1111111a");
         unit.addLast("333333333");
 
         assertEquals("333333333", unit.removeLast());
         assertEquals(4, unit.size());
+
+        assertEquals("22222222", unit.removeLast());
+        assertEquals(3, unit.size());
     }
 
     @Test
     public void testIterator() throws Exception {
 
+        Iterator<String> it = unit.iterator();
+
+        assertFalse(it.hasNext());
+
+        unit.addFirst("22222222");
+        unit.addFirst("11111111");
+        unit.addLast("333333333");
+        int counter = 0;
+        while (it.hasNext()) {
+            String item = it.next();
+            counter++;
+        }
+
+        assertEquals(3, unit.size());
+    }
+
+    @Test
+    public void testIteratorRemove() throws Exception {
+
+        unitObject = new Deque<Object>();
+        unitObject.addFirst(new RandomizedQueue<String>());
+        unitObject.addLast(new RuntimeException());
+
+        Iterator<Object> it = unitObject.iterator();
+
+        try {
+            it.next();
+            it.remove();
+            fail("remove() should have thrown exception.");
+        } catch (UnsupportedOperationException uoe) {
+            // ignore
+        }
     }
 }

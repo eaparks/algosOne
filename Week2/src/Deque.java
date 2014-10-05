@@ -6,7 +6,6 @@ import java.util.NoSuchElementException;
  */
 public class Deque<Item> implements Iterable<Item> {
 
-//    private Item[] items;
     private int queueCount;
     private Node<Item> first;
     private Node<Item> last;
@@ -19,7 +18,6 @@ public class Deque<Item> implements Iterable<Item> {
         queueCount = 0;
     }
 
-    // is the deque empty?
     public boolean isEmpty() {
 
         return first == null;
@@ -83,15 +81,26 @@ public class Deque<Item> implements Iterable<Item> {
         if (isEmpty()) {
             throw new NoSuchElementException("Queue is empty.");
         }
-        Item item = last.item;
-        // Iterate til node.next = last
+        Item lastItem = last.item;
+        if (size() == 1) {
+            first = null;
+            last = null;
+        } else {
+            Node newLastNode = first;
 
-        // ...then set its next to null.
-        queueCount--;
-        if (isEmpty()) {
-            last = null;   // to avoid loitering
+            for(Node node = first; node != null; node = node.next) {
+                if (node.next != null) {
+                    newLastNode = node;
+                }
+            }
+//          System.out.println("newLastNode Item is: " + newLastNode.item);
+            newLastNode.next = null;
+            last = newLastNode;
         }
-        return item;
+
+        queueCount--;
+
+        return lastItem;
     }
 
     // return an iterator over items in order from front to end

@@ -6,72 +6,97 @@
  */
 public class Percolation {
 
+    private int TOP_VIRTUAL;
+    private int BOTTOM_VIRTUAL;
+    private static final boolean BLOCKED = false;
     private boolean[] sites;
     private WeightedQuickUnionUF wqUnionFind;
-    private int N;
-    private static boolean BLOCKED = false;
+    private int n;
 
-    // create N-by-N grid, with all sites blocked
-    public Percolation(int N) {
+    public Percolation(final int n) {
 
-        if (N <= 0) {
+        if (n <= 0) {
             throw new IllegalArgumentException("N must be greater than zero.");
         }
-        this.N = N;
-        sites = new boolean[N * N + 2];         // Adding virtual top and bottom
+        this.n = n;
+        TOP_VIRTUAL = n * n;
+        BOTTOM_VIRTUAL = n * n + 1;
+        sites = new boolean[n * n + 2];         // Adding virtual top and bottom
         for (int i = 0; i < sites.length; i++) {
             sites[i] = BLOCKED;
         }
-        sites[N * N] = !BLOCKED;    // top virtual
-        sites[N * N + 1] = !BLOCKED;    // bottom virtual
+        sites[TOP_VIRTUAL] = !BLOCKED;
+        sites[BOTTOM_VIRTUAL] = !BLOCKED;
 
-        wqUnionFind = new WeightedQuickUnionUF(N * N + 2);
+        wqUnionFind = new WeightedQuickUnionUF(n * n + 2);
     }
 
-    // open site (row i, column j) if it is not already
     public void open(int i, int j) {
 
-        checkRange(i, N);
-        checkRange(j, N);
-        if (isOpen(i, j)) {
-            return;
+        checkRange(i, j, n);
+        if (!isOpen(i, j)) {
+            sites[indexFromRowCol(i, j)] = !BLOCKED;
+            unionWithNeighbors(i, j);
         }
-        sites[(i - 1) * N + j - 1] = !BLOCKED;
-//        wqUnionFind.find((i - 1) * N + j - 1);
+    }
 
-        // If top row, connect to virtual top
+    private int indexFromRowCol(final int i, final int j) {
+
+        return (i - 1) * n + j - 1;
+    }
+
+    private void unionWithNeighbors(int i, int j) {
+
+        unionWithVirtualNeighbors(i, j);
+        unionWithAbove(i, j);
+        unionWithBelow(i, j);
+        unionWithLeft(i, j);
+        unionWithRight(i, j);
+    }
+
+    private void unionWithVirtualNeighbors(int i, int j) {
+
         if (i == 1) {
-            wqUnionFind.union((i - 1) * N + j - 1, N * N);
+            wqUnionFind.union(indexFromRowCol(i, j), TOP_VIRTUAL);
         }
 
-        // If bottom row, connect to virtual bottom
-        if (i == N) {
-            wqUnionFind.union((i - 1) * N + j - 1, N * N + 1);
+        if (i == n) {
+            wqUnionFind.union(indexFromRowCol(i, j), BOTTOM_VIRTUAL);
         }
+    }
 
-        // Look for open neighbors and union with them
-        //above
-        if (i > 1) {
-            if (isOpen(i - 1, j)) {
-                wqUnionFind.union((i - 1) * N + j - 1, (i - 2) * N + j - 1);
-            }
-        }
-        //below
-        if (i < N) {
+    private void unionWithRight(int i, int j) {
+
+        if (j < n) {
             if (isOpen(i, j)) {
-                wqUnionFind.union((i - 1) * N + j - 1, i * N + j - 1);
+                wqUnionFind.union(indexFromRowCol(i, j), (i - 1) * n + j);
             }
         }
-        //left
+    }
+
+    private void unionWithLeft(int i, int j) {
+
         if (j > 1) {
             if (isOpen(i, j - 1)) {
-                wqUnionFind.union((i - 1) * N + j - 1, (i - 1) * N + j - 2);
+                wqUnionFind.union(indexFromRowCol(i, j), (i - 1) * n + j - 2);
             }
         }
-        //right
-        if (j < N) {
-            if (isOpen(i, j)) {
-                wqUnionFind.union((i - 1) * N + j - 1, (i - 1) * N + j);
+    }
+
+    private void unionWithBelow(int i, int j) {
+
+        if (i < n) {
+            if (isOpen(i + 1, j)) {
+                wqUnionFind.union(indexFromRowCol(i, j), i * n + j - 1);
+            }
+        }
+    }
+
+    private void unionWithAbove(int i, int j) {
+
+        if (i > 1) {
+            if (isOpen(i - 1, j)) {
+                wqUnionFind.union(indexFromRowCol(i, j), (i - 2) * n + j - 1);
             }
         }
     }
@@ -79,34 +104,35 @@ public class Percolation {
     // is site (row i, column j) open?
     public boolean isOpen(int i, int j) {
 
-        checkRange(i, N);
-        checkRange(j, N);
+        checkRange(i, j, n);
 
-        return sites[(i - 1) * N + j - 1];
+        return sites[indexFromRowCol(i, j)];
     }
 
-    // is site (row i, column j) full?
-    // A full site is an open site that can be connected to an open site
-    // in the top row via a chain of neighboring (left, right, up, down) open sites.
+    /**
+     * A full site is an open site that can be connected to an open site
+     * in the top row via a chain of neighboring (left, right, up, down) open sites.
+     *
+     */
     public boolean isFull(int i, int j) {
 
-        return isOpen(i, j) && wqUnionFind.connected((i - 1) * N + j -1, N * N);
+        return isOpen(i, j) && wqUnionFind.connected(indexFromRowCol(i, j), TOP_VIRTUAL);
     }
 
     // does the system percolate?
     public boolean percolates() {
 
-        return wqUnionFind.connected(N * N, N * N + 1);
+        return wqUnionFind.connected(TOP_VIRTUAL, BOTTOM_VIRTUAL);
     }
 
     private int rand() {
 
-        return 1 + StdRandom.uniform(N);
+        return 1 + StdRandom.uniform(n);
     }
 
-    private void checkRange(int input, int max) throws IndexOutOfBoundsException {
+    private void checkRange(int input1, int input2, int max) {
 
-        if (input <= 0 || input > max) {
+        if (input1 <= 0 || input1 > max || input2 <= 0 || input2 > max) {
             throw new IndexOutOfBoundsException("out of range");
         }
     }
