@@ -38,12 +38,13 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
 
         // do enqueue
-        for (int i = 0; i < items.length; i++) {
-            if (items[i] == null) {
-                items[i] = item;
-                break;
-            }
-        }
+//        for (int i = 0; i < items.length; i++) {
+//            if (items[i] == null) {
+//                items[i] = item;
+//                break;
+//            }
+//        }
+        items[nonNullItemCount] = item;
 
         nonNullItemCount++;
     }
@@ -66,7 +67,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         int indexToRemove = StdRandom.uniform(nonNullItemCount);
         Item item = items[indexToRemove];
         items[indexToRemove] = items[nonNullItemCount - 1];
-
+        items[nonNullItemCount - 1] = null;
 
         nonNullItemCount--;
 
@@ -83,13 +84,13 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         if (isEmpty()) {
             throw new NoSuchElementException("Queue underflow");
         }
-        return items[StdRandom.uniform(nonNullItemCount - 1)];
+        return items[StdRandom.uniform(nonNullItemCount)];
     }
 
     // return an independent iterator over items in random order
     public Iterator<Item> iterator() {
 
-        return new RandomizedQueueIterator(items, nonNullItemCount);
+        return new RandomizedQueueIterator<Item>(items, nonNullItemCount);
     }
 
 
@@ -97,23 +98,24 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
     }
 
-    private class RandomizedQueueIterator implements Iterator<Item> {
+    private class RandomizedQueueIterator<Item> implements Iterator<Item> {
 
         private int i;
         private int startingSize;
         private Item[] shuffledItems;
 
-        public RandomizedQueueIterator(Item[] items, int startingSize) {
+        public RandomizedQueueIterator(Item[] items, int nonNullSize) {
 
             i = 0;
             if (items != null) {
-                shuffledItems = (Item[]) new Object[startingSize];
-                StdRandom.shuffle(items);
+                shuffledItems = (Item[]) new Object[nonNullSize];
                 for (Item item : items) {
                     if (item != null) {
+//                        System.out.println("not null, " + i + " item: " + item);
                         shuffledItems[i++] = item;
                     }
                 }
+                StdRandom.shuffle(shuffledItems);
             }
         }
 
@@ -136,5 +138,20 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
             return shuffledItems[--i];
         }
     }
+
+//    public String toString() {
+//
+//        StringBuilder output = new StringBuilder(items[0].toString());
+//        for (int i = 1; i < nonNullItemCount; i++) {
+//
+//            output.append(";");
+//            output.append(items[i]);
+//
+//        }
+//        output.append("; items length is: " + items.length);
+//        output.append("; nonNullItemCount is: " + nonNullItemCount);
+//
+//        return output.toString();
+//    }
 
 }
