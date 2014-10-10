@@ -73,17 +73,27 @@ public class PointTest {
     @Test
     public void testComparator() throws Exception {
 
-        Point[] points = {pointA,
+        Point[] points = {
                             pointAbove, pointAboveLeft, pointAboveRight,
                             pointBelow, pointBelowLeft, pointBelowRight,
                             pointToLeft, pointToRight};
 
         Arrays.sort(points, pointA.SLOPE_ORDER);
 
-        Point[] pointsInExpectedOrder = {pointA,
-                                            pointAboveRight, pointAbove, pointAboveLeft,
+        Point[] pointsInExpectedOrder = {
+                                            pointAbove, pointAboveLeft,
                                             pointToLeft, pointBelowLeft, pointBelow,
-                                            pointBelowRight, pointToRight};
+                                            pointBelowRight, pointToRight, pointAboveRight};
+
+//        assertTrue(points.length == )
+
+        int i = 0;
+        for (Point point : points) {
+            System.out.println("Point: " + point.toString());
+            System.out.println("Expected Point: " + pointsInExpectedOrder[i]);
+            assertTrue(point.compareTo(pointsInExpectedOrder[i]) == 0);
+            i++;
+        }
 
     }
 }
