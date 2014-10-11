@@ -84,15 +84,15 @@ public class Point implements Comparable<Point> {
         return result;
     }
 
-    int getX() {
-        return x;
-    }
-
-
-    int getY() {
-
-        return y;
-    }
+//    int getX() {
+//        return x;
+//    }
+//
+//
+//    int getY() {
+//
+//        return y;
+//    }
 
     /**
      * The SLOPE_ORDER comparator should compare points by the slopes they
