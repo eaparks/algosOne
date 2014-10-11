@@ -17,7 +17,7 @@ public class PointTest {
     private Point pointAboveLeft =  new Point(1, 6);
 
     private Point pointBelow =      new Point(3, 3);
-    private Point pointBelowRight = new Point(5, 2);
+    private Point pointBelowRight = new Point(6, 3);
     private Point pointBelowLeft =  new Point(1, 2);
 
     private Point pointB =          new Point(3, 4);
@@ -73,27 +73,24 @@ public class PointTest {
     @Test
     public void testComparator() throws Exception {
 
-        Point[] points = {
-                            pointAbove, pointAboveLeft, pointAboveRight,
-                            pointBelow, pointBelowLeft, pointBelowRight,
-                            pointToLeft, pointToRight};
+        Point[] points = {pointAbove, pointAboveLeft, pointAboveRight,
+                          pointBelow, pointBelowLeft, pointBelowRight,
+                          pointToLeft, pointToRight};
 
         Arrays.sort(points, pointA.SLOPE_ORDER);
 
-        Point[] pointsInExpectedOrder = {
-                                            pointAbove, pointAboveLeft,
-                                            pointToLeft, pointBelowLeft, pointBelow,
-                                            pointBelowRight, pointToRight, pointAboveRight};
-
-//        assertTrue(points.length == )
+        Point[] pointsInExpectedOrder = {pointAboveLeft, pointBelowRight,
+                                         pointToLeft, pointToRight,
+                                         pointBelowLeft, pointAboveRight,
+                                         pointBelow, pointAbove};
 
         int i = 0;
         for (Point point : points) {
             System.out.println("Point: " + point.toString());
             System.out.println("Expected Point: " + pointsInExpectedOrder[i]);
-            assertTrue(point.compareTo(pointsInExpectedOrder[i]) == 0);
+            assertTrue(point.getX() == pointsInExpectedOrder[i].getX());
+            assertTrue(point.getY() == pointsInExpectedOrder[i].getY());
             i++;
         }
-
     }
 }

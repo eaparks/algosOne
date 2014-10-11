@@ -84,6 +84,16 @@ public class Point implements Comparable<Point> {
         return result;
     }
 
+    int getX() {
+        return x;
+    }
+
+
+    int getY() {
+
+        return y;
+    }
+
     /**
      * The SLOPE_ORDER comparator should compare points by the slopes they
      * make with the invoking point (x0, y0). Formally, the point (x1, y1)
@@ -97,9 +107,15 @@ public class Point implements Comparable<Point> {
         @Override
         public int compare(Point p1, Point p2) {
 
-            if (Point.this.slopeTo(p1) < Point.this.slopeTo(p2)) return -1;
-            if (Point.this.slopeTo(p1) > Point.this.slopeTo(p2)) return 1;
-            return 0;
+            if (slopeTo(p1) == Double.POSITIVE_INFINITY && slopeTo(p2) == Double.POSITIVE_INFINITY) {
+                return p1.compareTo(p2);
+            }
+            if (slopeTo(p1) == 0 && slopeTo(p2) == 0) {
+                return p1.compareTo(p2);
+            }
+            if (slopeTo(p1) < slopeTo(p2)) return -1;
+            if (slopeTo(p1) > slopeTo(p2)) return 1;
+            return p1.compareTo(p2);
         }
     }
 }
