@@ -333,12 +333,11 @@ public class Fast {
                 throw new IllegalArgumentException("Point parameter must not be null.");
             }
             double result = 0.0;
-            if (((double) this.y / (double) that.y == 1.0 / 1.0) &&
-                    ((double) this.x / (double) that.x == 1.0 / 1.0)) {
+            if (this.x == that.x && this.y == that.y) {
                 result = Double.NEGATIVE_INFINITY;
-            } else if ((double) this.y / (double) that.y == 1.0 / 1.0) {
+            } else if (this.y == that.y) {
                 result = 0.0;
-            } else if ((double) this.x / that.x == 1.0 / 1.0) {
+            } else if (this.x == that.x) {
                 result = Double.POSITIVE_INFINITY;
             } else {
                 result = (double) (that.y - this.y) / (double) (that.x - this.x);
@@ -360,10 +359,10 @@ public class Fast {
             public int compare(Point p1, Point p2) {
 
                 if (slopeTo(p1) == Double.POSITIVE_INFINITY && slopeTo(p2) == Double.POSITIVE_INFINITY) {
-                    return p1.compareTo(p2);
+                    return 0;
                 }
                 if (slopeTo(p1) == 0 && slopeTo(p2) == 0) {
-                    return p1.compareTo(p2);
+                    return 0;
                 }
                 if (slopeTo(p1) < slopeTo(p2)) return -1;
                 if (slopeTo(p1) > slopeTo(p2)) return 1;
